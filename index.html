@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Money Lodge | Empire Domination</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div>
+                    <div class="logo">MONEY LODGE</div>
+                    <div class="subtitle">EMPIRE DOMINATION</div>
+                </div>
+                <div class="month-selector">
+                    <select id="monthSelect">
+                        <option value="0">January</option>
+                        <option value="1">February</option>
+                        <option value="2">March</option>
+                        <option value="3">April</option>
+                        <option value="4">May</option>
+                        <option value="5">June</option>
+                        <option value="6">July</option>
+                        <option value="7">August</option>
+                        <option value="8">September</option>
+                        <option value="9">October</option>
+                        <option value="10">November</option>
+                        <option value="11">December</option>
+                    </select>
+                    <select id="yearSelect"></select>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="nav-tabs">
+            <div class="nav-tabs-left">
+                <button class="nav-tab active" data-tab="dashboard">Dashboard</button>
+                <button class="nav-tab" data-tab="transactions">Transactions</button>
+                <button class="nav-tab" data-tab="budget">Budget</button>
+                <button class="nav-tab" data-tab="analytics">Analytics</button>
+            </div>
+            <div class="nav-tabs-right">
+                <button class="action-btn" onclick="window.moneyLodge.generateReport()">📊 Report</button>
+                <button class="action-btn" onclick="window.moneyLodge.exportData()">💾 Export</button>
+                <button class="action-btn" onclick="document.getElementById('importFile').click()">📁 Import</button>
+                <input type="file" id="importFile" accept=".json" onchange="window.moneyLodge.importData(event)">
+                <button class="action-btn" onclick="window.moneyLodge.clearPeriodData()">🗑️ Clear</button>
+            </div>
+        </div>
+
+        <div id="dashboard" class="tab-content active">
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Income</div>
+                    <div class="stat-value" id="totalIncome">$0.00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Expenses</div>
+                    <div class="stat-value" id="totalExpenses">$0.00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Net Balance</div>
+                    <div class="stat-value" id="netBalance">$0.00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Savings Rate</div>
+                    <div class="stat-value" id="savingsRate">0%</div>
+                </div>
+            </div>
+
+            <div class="financial-metrics">
+                <div class="metric-card">
+                    <div class="metric-title">Expense Ratio</div>
+                    <div class="metric-value" id="expenseRatio">0%</div>
+                    <div class="metric-description">Percentage of income spent on expenses</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Daily Average Spend</div>
+                    <div class="metric-value" id="dailyAverage">$0.00</div>
+                    <div class="metric-description">Average daily expenditure this month</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Projected Month End</div>
+                    <div class="metric-value" id="projectedEnd">$0.00</div>
+                    <div class="metric-description">Expected balance at month end</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="transactions" class="tab-content">
+            <div class="form-section">
+                <h2 style="color: var(--primary-gold); margin-bottom: 20px;">Add Transaction</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Type</label>
+                        <select id="transactionType">
+                            <option value="income">Income</option>
+                            <option value="expense">Expense</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Source/Category</label>
+                        <input type="text" id="transactionSource" placeholder="e.g., Salary, Rent, Food" list="categoryList">
+                    </div>
+                    <div class="form-group">
+                        <label>Amount</label>
+                        <input type="number" id="transactionAmount" placeholder="0.00" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" id="transactionDate">
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <input type="text" id="transactionDescription" placeholder="Optional notes">
+                    </div>
+                    <div class="form-group">
+                        <label>Recurring</label>
+                        <select id="recurringFrequency">
+                            <option value="none">One-time</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="weekly">Weekly</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button onclick="window.moneyLodge.addTransaction()">Add Transaction</button>
+                    <button onclick="window.moneyLodge.addQuickTransaction('income')" style="background: var(--success);">Quick Income</button>
+                    <button onclick="window.moneyLodge.addQuickTransaction('expense')" style="background: var(--danger);">Quick Expense</button>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 style="color: var(--primary-gold); margin-bottom: 20px;">Transaction History</h2>
+                <div class="search-bar">
+                    <input type="text" id="searchTerm" placeholder="Search transactions..." onkeyup="window.moneyLodge.filterAndDisplayTransactions()">
+                    <select id="typeFilter" onchange="window.moneyLodge.filterAndDisplayTransactions()">
+                        <option value="all">All Types</option>
+                        <option value="income">Income Only</option>
+                        <option value="expense">Expenses Only</option>
+                    </select>
+                    <input type="date" id="dateFrom" onchange="window.moneyLodge.filterAndDisplayTransactions()">
+                    <input type="date" id="dateTo" onchange="window.moneyLodge.filterAndDisplayTransactions()">
+                </div>
+                <div class="transaction-list scrollbar" id="transactionList"></div>
+            </div>
+        </div>
+
+        <div id="budget" class="tab-content">
+            <div class="form-section">
+                <h2 style="color: var(--primary-gold); margin-bottom: 20px;">Budget Settings</h2>
+                <div class="budget-settings">
+                    <div class="form-group">
+                        <label>Monthly Income Goal</label>
+                        <input type="number" id="incomeGoal" placeholder="0.00" step="0.01" onchange="window.moneyLodge.saveBudgetSettings()">
+                    </div>
+                    <div class="form-group">
+                        <label>Monthly Expense Limit</label>
+                        <input type="number" id="expenseLimit" placeholder="0.00" step="0.01" onchange="window.moneyLodge.saveBudgetSettings()">
+                    </div>
+                    <div class="form-group">
+                        <label>Savings Target (%)</label>
+                        <input type="number" id="savingsTarget" placeholder="20" min="0" max="100" onchange="window.moneyLodge.saveBudgetSettings()">
+                    </div>
+                    <div class="form-group">
+                        <label>Emergency Fund Goal</label>
+                        <input type="number" id="emergencyFund" placeholder="0.00" step="0.01" onchange="window.moneyLodge.saveBudgetSettings()">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 style="color: var(--primary-gold); margin-bottom: 20px;">Budget Progress</h2>
+                <div>
+                    <div class="stat-label">Income Progress</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="incomeProgress" style="width: 0%">0%</div>
+                    </div>
+                </div>
+                <div style="margin-top: 20px;">
+                    <div class="stat-label">Expense Usage</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="expenseProgress" style="width: 0%">0%</div>
+                    </div>
+                </div>
+                <div style="margin-top: 20px;">
+                    <div class="stat-label">Savings Achievement</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="savingsProgress" style="width: 0%">0%</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 style="color: var(--primary-gold); margin-bottom: 20px;">Savings Calculator</h2>
+                <div class="budget-settings">
+                    <div class="form-group">
+                        <label>Current Monthly Income</label>
+                        <input type="number" id="calcIncome" placeholder="0.00" step="0.01" onchange="window.moneyLodge.calculateSavings()">
+                    </div>
+                    <div class="form-group">
+                        <label>Essential Expenses</label>
+                        <input type="number" id="calcEssential" placeholder="0.00" step="0.01" onchange="window.moneyLodge.calculateSavings()">
+                    </div>
+                    <div class="form-group">
+                        <label>Discretionary Expenses</label>
+                        <input type="number" id="calcDiscretionary" placeholder="0.00" step="0.01" onchange="window.moneyLodge.calculateSavings()">
+                    </div>
+                </div>
+                <div class="financial-metrics" style="margin-top: 20px;">
+                    <div class="metric-card">
+                        <div class="metric-title">Recommended Savings</div>
+                        <div class="metric-value" id="recommendedSavings">$0.00</div>
+                        <div class="metric-description">50/30/20 Rule: 20% of income</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Maximum Possible Savings</div>
+                        <div class="metric-value" id="maxSavings">$0.00</div>
+                        <div class="metric-description">After essential expenses only</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Current Potential Savings</div>
+                        <div class="metric-value" id="currentSavings">$0.00</div>
+                        <div class="metric-description">Based on your inputs</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="analytics" class="tab-content">
+            <div class="form-section">
+                <h2 style="color: var(--primary-gold); margin-bottom: 20px;">All-Time Statistics</h2>
+                <div class="dashboard-grid" id="allTimeStats"></div>
+            </div>
+            
+            <div class="financial-metrics">
+                <div class="metric-card">
+                    <div class="metric-title">Return on Investment (ROI)</div>
+                    <div class="metric-value" id="roi">N/A</div>
+                    <div class="metric-description">Calculate investment returns</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Debt-to-Income Ratio</div>
+                    <div class="metric-value" id="debtRatio">0%</div>
+                    <div class="metric-description">Monthly debt payments vs income</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Financial Freedom Number</div>
+                    <div class="metric-value" id="freedomNumber">$0</div>
+                    <div class="metric-description">25x annual expenses for retirement</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Months of Emergency Fund</div>
+                    <div class="metric-value" id="emergencyMonths">0</div>
+                    <div class="metric-description">Based on current expenses</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Cash Flow</div>
+                    <div class="metric-value" id="cashFlow">$0.00</div>
+                    <div class="metric-description">Net monthly cash movement</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Burn Rate</div>
+                    <div class="metric-value" id="burnRate">$0.00</div>
+                    <div class="metric-description">Monthly spending velocity</div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 style="color: var(--primary-gold); margin-bottom: 20px;">Top Expense Categories</h2>
+                <div id="expenseBreakdown"></div>
+            </div>
+
+            <div class="form-section">
+                <h2 style="color: var(--primary-gold); margin-bottom: 20px;">Income Sources Distribution</h2>
+                <div id="incomeBreakdown"></div>
+            </div>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+       
+</body>
+</html>
