@@ -544,7 +544,7 @@ window.moneyLodge = (function() {
     }
 
     // Map transaction source to budget category
-    function mapTobudgetCategory(source) {
+    function mapToBudgetCategory(source) {
         const mappings = {
             'rent': 'Housing',
             'mortgage': 'Housing',
@@ -587,7 +587,7 @@ window.moneyLodge = (function() {
         // Calculate actual expenses by category
         const expensesByCategory = {};
         transactions.filter(t => t.type === 'expense').forEach(t => {
-            const category = mapTobudgetCategory(t.source);
+            const category = mapToBudgetCategory(t.source);
             expensesByCategory[category] = (expensesByCategory[category] || 0) + t.amount;
         });
 
@@ -652,6 +652,13 @@ window.moneyLodge = (function() {
         }
     }
 
+    function safeUpdateElement(id, value) {
+    const element = document.getElementById(id);
+    if (element) {
+        element.textContent = value;
+    }
+}
+
     // Update dashboard with enhanced metrics
     function updateDashboard() {
         const periodData = getPeriodData();
@@ -710,14 +717,30 @@ window.moneyLodge = (function() {
 
     // Save budget settings
     function saveBudgetSettings() {
-        const periodData = getPeriodData();
-        periodData.budget.incomeGoal = parseFloat(document.getElementById('incomeGoal').value) || 0;
-        periodData.budget.expenseLimit = parseFloat(document.getElementById('expenseLimit').value) || 0;
-        periodData.budget.savingsTarget = parseFloat(document.getElementById('savingsTarget').value) || 20;
-        periodData.budget.emergencyFund = parseFloat(document.getElementById('emergencyFund').value) || 0;
-        saveData();
-        updateBudgetProgress();
+    const periodData = getPeriodData();
+    
+    // Check if elements exist before trying to read them
+    const incomeGoalEl = document.getElementById('incomeGoal');
+    const expenseLimitEl = document.getElementById('expenseLimit');
+    const savingsTargetEl = document.getElementById('savingsTarget');
+    const emergencyFundEl = document.getElementById('emergencyFund');
+    
+    if (incomeGoalEl) {
+        periodData.budget.incomeGoal = parseFloat(incomeGoalEl.value) || 0;
     }
+    if (expenseLimitEl) {
+        periodData.budget.expenseLimit = parseFloat(expenseLimitEl.value) || 0;
+    }
+    if (savingsTargetEl) {
+        periodData.budget.savingsTarget = parseFloat(savingsTargetEl.value) || 20;
+    }
+    if (emergencyFundEl) {
+        periodData.budget.emergencyFund = parseFloat(emergencyFundEl.value) || 0;
+    }
+    
+    saveData();
+    updateBudgetProgress();
+}
 
     // Update budget progress
     function updateBudgetProgress() {
