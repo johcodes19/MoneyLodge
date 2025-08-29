@@ -825,6 +825,13 @@ window.moneyLodge = (function() {
        const income = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
        const expenses = transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
 
+        safeUpdateElement('cashFlow', `$${(income - expenses).toFixed(2)}`);
+        safeUpdateElement('burnRate', `$${expenses.toFixed(2)}`);
+        safeUpdateElement('freedomNumber', `$${freedomNumber.toLocaleString()}`);
+        safeUpdateElement('emergencyMonths', emergencyMonths);
+        safeUpdateElement('debtRatio', '0%');
+        safeUpdateElement('roi', 'N/A');
+
        // Update all-time statistics
        const allTimeStats = calculateQuickStats();
        const allTimeContainer = document.getElementById('allTimeStats');
