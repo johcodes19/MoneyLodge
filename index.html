@@ -40,6 +40,7 @@
             <div class="nav-tabs-left">
                 <button class="nav-tab active" data-tab="dashboard">Dashboard</button>
                 <button class="nav-tab" data-tab="transactions">Transactions</button>
+                <button class="nav-tab" data-tab="savings">Savings</button>
                 <button class="nav-tab" data-tab="budget">Budget</button>
                 <button class="nav-tab" data-tab="analytics">Analytics</button>
             </div>
@@ -52,6 +53,7 @@
             </div>
         </div>
 
+        <!-- Dashboard Tab -->
         <div id="dashboard" class="tab-content active">
             <div class="dashboard-grid">
                 <div class="stat-card">
@@ -69,6 +71,39 @@
                 <div class="stat-card">
                     <div class="stat-label">Savings Rate</div>
                     <div class="stat-value" id="savingsRate">0%</div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>Financial Health Score</h2>
+                <div class="health-score-container">
+                    <div class="score-display">
+                        <div id="healthScore">0</div>
+                        <div class="score-label">Overall Score</div>
+                    </div>
+                    <div class="score-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="healthProgress"></div>
+                        </div>
+                        <div id="healthAssessment"></div>
+                    </div>
+                </div>
+                <div class="dashboard-grid">
+                    <div class="metric-card">
+                        <div class="metric-title">Liquidity Ratio</div>
+                        <div class="metric-value" id="liquidityRatio">0%</div>
+                        <div class="metric-description">Savings vs Monthly Expenses</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Budget Adherence</div>
+                        <div class="metric-value" id="budgetAdherence">0%</div>
+                        <div class="metric-description">Actual vs Planned Spending</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Income Stability</div>
+                        <div class="metric-value" id="incomeStability">0%</div>
+                        <div class="metric-description">Income Consistency Score</div>
+                    </div>
                 </div>
             </div>
 
@@ -91,9 +126,10 @@
             </div>
         </div>
 
+        <!-- Transactions Tab -->
         <div id="transactions" class="tab-content">
             <div class="form-section">
-                <h2 style="color: var(--primary-gold); margin-bottom: 20px;">Add Transaction</h2>
+                <h2>Add Transaction</h2>
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Type</label>
@@ -127,15 +163,15 @@
                         </select>
                     </div>
                 </div>
-                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <div class="button-group">
                     <button onclick="window.moneyLodge.addTransaction()">Add Transaction</button>
-                    <button onclick="window.moneyLodge.addQuickTransaction('income')" style="background: var(--success);">Quick Income</button>
-                    <button onclick="window.moneyLodge.addQuickTransaction('expense')" style="background: var(--danger);">Quick Expense</button>
+                    <button class="quick-income" onclick="window.moneyLodge.addQuickTransaction('income')">Quick Income</button>
+                    <button class="quick-expense" onclick="window.moneyLodge.addQuickTransaction('expense')">Quick Expense</button>
                 </div>
             </div>
 
             <div class="form-section">
-                <h2 style="color: var(--primary-gold); margin-bottom: 20px;">Transaction History</h2>
+                <h2>Transaction History</h2>
                 <div class="search-bar">
                     <input type="text" id="searchTerm" placeholder="Search transactions..." onkeyup="window.moneyLodge.filterAndDisplayTransactions()">
                     <select id="typeFilter" onchange="window.moneyLodge.filterAndDisplayTransactions()">
@@ -150,9 +186,154 @@
             </div>
         </div>
 
+        <!-- Savings Tab -->
+        <div id="savings" class="tab-content">
+            <div class="form-section">
+                <h2>Savings Account Management</h2>
+                <div class="dashboard-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Current Savings Balance</div>
+                        <div class="stat-value" id="savingsBalance">$0.00</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Total Deposits</div>
+                        <div class="stat-value" id="totalDeposits">$0.00</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Total Withdrawals</div>
+                        <div class="stat-value" id="totalWithdrawals">$0.00</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">This Month's Savings</div>
+                        <div class="stat-value" id="monthSavings">$0.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>Savings Transaction</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Transaction Type</label>
+                        <select id="savingsType">
+                            <option value="deposit">Deposit</option>
+                            <option value="withdrawal">Withdrawal</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Amount</label>
+                        <input type="number" id="savingsAmount" placeholder="0.00" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <input type="text" id="savingsDescription" placeholder="Purpose/Note">
+                    </div>
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" id="savingsDate">
+                    </div>
+                </div>
+                <button onclick="window.moneyLodge.addSavingsTransaction()">Add Transaction</button>
+            </div>
+
+            <div class="form-section">
+                <h2>Savings History</h2>
+                <div class="transaction-list scrollbar" id="savingsList"></div>
+            </div>
+
+            <div class="form-section">
+                <h2>Savings Goals</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Goal Name</label>
+                        <input type="text" id="goalName" placeholder="e.g., Emergency Fund, Vacation">
+                    </div>
+                    <div class="form-group">
+                        <label>Target Amount</label>
+                        <input type="number" id="goalTarget" placeholder="0.00" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Target Date</label>
+                        <input type="date" id="goalDate">
+                    </div>
+                    <div class="form-group">
+                        <button onclick="window.moneyLodge.addSavingsGoal()">Add Goal</button>
+                    </div>
+                </div>
+                <div id="savingsGoals"></div>
+            </div>
+        </div>
+
+        <!-- Budget Tab -->
         <div id="budget" class="tab-content">
             <div class="form-section">
-                <h2 style="color: var(--primary-gold); margin-bottom: 20px;">Budget Settings</h2>
+                <h2>Budget Planning</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="budgetCategory">
+                            <option value="">Select Category</option>
+                            <option value="Housing">Housing</option>
+                            <option value="Food">Food & Dining</option>
+                            <option value="Transportation">Transportation</option>
+                            <option value="Utilities">Utilities</option>
+                            <option value="Healthcare">Healthcare</option>
+                            <option value="Entertainment">Entertainment</option>
+                            <option value="Shopping">Shopping</option>
+                            <option value="Insurance">Insurance</option>
+                            <option value="Debt">Debt Payments</option>
+                            <option value="Education">Education</option>
+                            <option value="Personal">Personal Care</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Budget Amount</label>
+                        <input type="number" id="budgetAmount" placeholder="0.00" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Priority</label>
+                        <select id="budgetPriority">
+                            <option value="essential">Essential</option>
+                            <option value="important">Important</option>
+                            <option value="optional">Optional</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <button onclick="window.moneyLodge.addBudgetItem()">Add Budget</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>Budget vs Actual Analysis</h2>
+                <div id="budgetAnalysis"></div>
+            </div>
+
+            <div class="form-section">
+                <h2>Budget Summary</h2>
+                <div class="dashboard-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Total Budget</div>
+                        <div class="stat-value" id="totalBudget">$0.00</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Budget Used</div>
+                        <div class="stat-value" id="budgetUsed">$0.00</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Budget Remaining</div>
+                        <div class="stat-value" id="budgetRemaining">$0.00</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Utilization Rate</div>
+                        <div class="stat-value" id="utilizationRate">0%</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>Budget Settings</h2>
                 <div class="budget-settings">
                     <div class="form-group">
                         <label>Monthly Income Goal</label>
@@ -174,29 +355,29 @@
             </div>
 
             <div class="form-section">
-                <h2 style="color: var(--primary-gold); margin-bottom: 20px;">Budget Progress</h2>
+                <h2>Budget Progress</h2>
                 <div>
                     <div class="stat-label">Income Progress</div>
                     <div class="progress-bar">
-                        <div class="progress-fill" id="incomeProgress" style="width: 0%">0%</div>
+                        <div class="progress-fill" id="incomeProgress">0%</div>
                     </div>
                 </div>
-                <div style="margin-top: 20px;">
+                <div>
                     <div class="stat-label">Expense Usage</div>
                     <div class="progress-bar">
-                        <div class="progress-fill" id="expenseProgress" style="width: 0%">0%</div>
+                        <div class="progress-fill" id="expenseProgress">0%</div>
                     </div>
                 </div>
-                <div style="margin-top: 20px;">
+                <div>
                     <div class="stat-label">Savings Achievement</div>
                     <div class="progress-bar">
-                        <div class="progress-fill" id="savingsProgress" style="width: 0%">0%</div>
+                        <div class="progress-fill" id="savingsProgress">0%</div>
                     </div>
                 </div>
             </div>
 
             <div class="form-section">
-                <h2 style="color: var(--primary-gold); margin-bottom: 20px;">Savings Calculator</h2>
+                <h2>Savings Calculator</h2>
                 <div class="budget-settings">
                     <div class="form-group">
                         <label>Current Monthly Income</label>
@@ -211,7 +392,7 @@
                         <input type="number" id="calcDiscretionary" placeholder="0.00" step="0.01" onchange="window.moneyLodge.calculateSavings()">
                     </div>
                 </div>
-                <div class="financial-metrics" style="margin-top: 20px;">
+                <div class="financial-metrics">
                     <div class="metric-card">
                         <div class="metric-title">Recommended Savings</div>
                         <div class="metric-value" id="recommendedSavings">$0.00</div>
@@ -231,9 +412,10 @@
             </div>
         </div>
 
+        <!-- Analytics Tab -->
         <div id="analytics" class="tab-content">
             <div class="form-section">
-                <h2 style="color: var(--primary-gold); margin-bottom: 20px;">All-Time Statistics</h2>
+                <h2>All-Time Statistics</h2>
                 <div class="dashboard-grid" id="allTimeStats"></div>
             </div>
             
@@ -271,18 +453,17 @@
             </div>
 
             <div class="form-section">
-                <h2 style="color: var(--primary-gold); margin-bottom: 20px;">Top Expense Categories</h2>
+                <h2>Top Expense Categories</h2>
                 <div id="expenseBreakdown"></div>
             </div>
 
             <div class="form-section">
-                <h2 style="color: var(--primary-gold); margin-bottom: 20px;">Income Sources Distribution</h2>
+                <h2>Income Sources Distribution</h2>
                 <div id="incomeBreakdown"></div>
             </div>
         </div>
     </main>
 
     <script src="app.js"></script>
-       
 </body>
 </html>
